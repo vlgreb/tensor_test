@@ -36,8 +36,8 @@ class Parser:
 
     @staticmethod
     def convert(text):
-        '''Функция форматирует текст: длина строки не более MAXLENGTH,
-        абзацы и заголовки отбиваются пустой строкой'''
+        ''' Функция форматирует текст: длина строки не более MAXLENGTH,
+        абзацы и заголовки отбиваются пустой строкой '''
         output_text = ''  # записываем сюда новую строку
         c = 0  # счётчик символов с строке
         for i in text.split():  # проходим по каждому слову
@@ -68,5 +68,3 @@ if __name__ == '__main__':
     article = Parser(URL, tag)
     with open(f'{make_path(URL)}index.txt', 'w') as f:
         f.write(article.parse())
-
-
