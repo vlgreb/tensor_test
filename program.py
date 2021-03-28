@@ -1,7 +1,8 @@
+import os
+import sys
+
 import requests
 from bs4 import BeautifulSoup
-import sys
-import os
 
 
 MAXLENGTH = 80  # максимальная длина строки выходного файла
@@ -9,7 +10,7 @@ MAXLENGTH = 80  # максимальная длина строки выходн�
 
 class Parser:
 
-    def __init__(self, url, tag):
+    def __init__(self, url, tag='p'):
         self.html = requests.get(url)
         self.tag = tag
         self.article = ''
@@ -17,8 +18,8 @@ class Parser:
     def get_content(self):
         soup = BeautifulSoup(self.html.text, 'html.parser')
         title = soup.find('h1')
-        self.article = f'{Parser.convert(title.text)}\n\n'
-        items = soup.find_all(self.tag)
+        self.article = f'{Parser.convert(title.text)}\n\n'  # сохраняем заголовок
+        items = soup.find_all(self.tag)  # ищем блоки по тэгам из параметов
         for item in items:
             link = item.find('a')
             if link and link.get('href')[:4] == 'http':  # проверяем, что ссылка внешняя
@@ -27,12 +28,9 @@ class Parser:
             self.article = f'{self.article}{Parser.convert(string)}\n\n'
 
     def parse(self):
-        html = self.html
-        if html.status_code == 200:
+        if self.html.status_code == 200:
             self.get_content()
             return self.article
-        else:
-            return None
 
     @staticmethod
     def convert(text):
@@ -62,9 +60,8 @@ if __name__ == '__main__':
     if len(sys.argv) < 3:
         print('Недостаточно параметров')
         sys.exit(1)
-    else:
-        URL = sys.argv[1]
-        tag = sys.argv[2]
+    URL = sys.argv[1]
+    tag = sys.argv[2]
     article = Parser(URL, tag)
     with open(f'{make_path(URL)}index.txt', 'w') as f:
         f.write(article.parse())
